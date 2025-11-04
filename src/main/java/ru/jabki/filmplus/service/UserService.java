@@ -1,0 +1,58 @@
+package ru.jabki.filmplus.service;
+
+import org.springframework.util.StringUtils;
+import org.springframework.stereotype.Service;
+import ru.jabki.filmplus.exception.UserException;
+import ru.jabki.filmplus.model.User;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Service
+public class UserService {
+    private static final Set<User> users = new HashSet<>();
+
+    public User create(User user) {
+        validate(user);
+        user.setId((long) users.size() + 1);
+        users.add(user);
+        return user;
+    }
+
+    public User getById(long id) {
+        final User user = users.stream()
+                .filter(u -> u.getId() == id)
+                .findFirst().orElse(null);
+        if (user == null) {
+            throw new UserException("Пользователь по id " + id + " не найден");
+        }
+        return user;
+    }
+
+    public void delete(long id) {
+        users.remove(getById(id));
+    }
+
+    public User update(User user) {
+        validate(user);
+        User existsUser = getById(user.getId());
+        existsUser.setName(user.getName());
+        existsUser.setEmail(user.getEmail());
+        return existsUser;
+    }
+
+    private void validate(User user) {
+        if (user == null) {
+            throw new UserException("Пользователь не может быть пустым");
+        }
+
+        if (!StringUtils.hasText(user.getName())) {
+            throw new UserException("Имя пользователя не может быть пустым");
+        }
+
+        if (!StringUtils.hasText(user.getEmail())) {
+            throw new UserException("Емейл пользователя не может быть пустым");
+        }
+    }
+
+}
