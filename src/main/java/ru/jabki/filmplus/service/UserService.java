@@ -38,6 +38,8 @@ public class UserService {
         User existsUser = getById(user.getId());
         existsUser.setName(user.getName());
         existsUser.setEmail(user.getEmail());
+        existsUser.setLogin(user.getLogin());
+        existsUser.setBirthday(user.getBirthday());
         return existsUser;
     }
 
@@ -53,6 +55,13 @@ public class UserService {
         if (!StringUtils.hasText(user.getEmail())) {
             throw new UserException("Емейл пользователя не может быть пустым");
         }
-    }
 
+        if (!StringUtils.hasText(user.getLogin())) {
+            throw new UserException("Логин пользователя не может быть пустым");
+        }
+
+        if (user.getBirthday() == null) {
+            throw new UserException("Дата рождения не может быть пустой");
+        }
+    }
 }
