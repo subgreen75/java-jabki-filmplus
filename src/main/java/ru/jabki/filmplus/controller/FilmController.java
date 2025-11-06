@@ -53,7 +53,7 @@ public class FilmController {
 
     @GetMapping("/byname")
     @Operation(summary = "Найти фильм по названию")
-    public Film getByName(@RequestParam String name) {
+    public Set<Film> getByName(@RequestParam String name) {
         return filmService.getByName(name);
     }
 

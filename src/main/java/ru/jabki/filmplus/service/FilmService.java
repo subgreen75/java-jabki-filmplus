@@ -33,14 +33,10 @@ public class FilmService {
         return film;
     }
 
-    public Film getByName(String name) {
-        final Film film = films.stream()
-                .filter(u -> name.equals(u.getName()))
-                .findFirst().orElse(null);
-        if (film == null) {
-            throw new FilmException("Фильм по названию " + name + " не найден");
-        }
-        return film;
+    public Set<Film> getByName(String name) {
+        return films.stream()
+                .filter(u -> u.getName().toUpperCase().contains(name.toUpperCase()))
+                .collect(Collectors.toSet());
     }
 
     public static Set<Film> getByYear(int year) {
