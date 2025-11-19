@@ -5,8 +5,12 @@ import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.FilmException;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Genre;
+import ru.jabki.filmplus.model.User;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,15 +37,14 @@ public class FilmService {
         return film;
     }
 
-    public Set<Film> getByName(String name) {
+    public Set<Film> search(String name, int year ) {
+        if (StringUtils.isEmpty(name) && year == 0) {
+            throw new FilmException("Хотя бы один параметр нужно ввести");
+        }
         return films.stream()
-                .filter(u -> u.getName().toUpperCase().contains(name.toUpperCase()))
-                .collect(Collectors.toSet());
-    }
-
-    public static Set<Film> getByYear(int year) {
-        return films.stream()
-                .filter(u -> u.getReleaseDate().getYear() == year)
+                .filter(u -> u.getName().toUpperCase().contains((name == null)?u.getName().toUpperCase() : name.toUpperCase() ) &&
+                                  u.getReleaseDate().getYear() == ((year == 0) ? u.getReleaseDate().getYear() : year)
+                       )
                 .collect(Collectors.toSet());
     }
 
@@ -88,5 +91,30 @@ public class FilmService {
         if (!(List.of(Genre.values()).containsAll(film.getGenres()))) {
             throw new FilmException("В списке есть неопределенный жанр. Доступные жанры: " + Arrays.toString(Genre.values()));
         }
+        if (film.getReleaseDate().isAfter(LocalDate.now())) {
+            throw new FilmException("Дата релиза не может быть в будущем");
+        }
+    }
+
+    public void addComments(Film film, User user, String comments) {
+        film.addComment(user.getId(),  comments);
+    }
+
+    public HashMap<Long, String> getComments(Long filmId) {
+        return getById(filmId).getComments();
+    }
+
+    public void addGrade(Film film, User user, Integer grade) {
+        if (grade == null) {
+            throw new FilmException("Оценка не может быть null");
+        }
+        if (grade < 0 || grade > 10) {
+            throw new FilmException("Оценка должна быть в пределах от 0 до 10");
+        }
+        film.setGrades(user.getId(), grade);
+    }
+
+    public HashMap<Long, Integer> getGrades(Long filmId) {
+        return getById(filmId).getGrades();
     }
 }

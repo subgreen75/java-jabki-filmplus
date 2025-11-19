@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.service.FilmService;
+import ru.jabki.filmplus.service.UserService;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -21,16 +24,17 @@ import java.util.Set;
 @Tag(name = "Фильмы")
 public class FilmController {
     private final FilmService filmService;
+    private final UserService userService;
 
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, UserService userService) {
         this.filmService = filmService;
+        this.userService = userService;
     }
 
     @PostMapping
     @Operation(summary = "Создать фильм")
     public Film create(@RequestBody Film film) {
         return filmService.create(film);
-        //return film;
     }
 
     @GetMapping("/{id}")
@@ -51,15 +55,36 @@ public class FilmController {
         return filmService.update(film);
     }
 
-    @GetMapping("/byname")
-    @Operation(summary = "Найти фильм по названию")
-    public Set<Film> getByName(@RequestParam String name) {
-        return filmService.getByName(name);
+    @GetMapping("/name/year")
+    @Operation(summary = "Найти фильм по названию и/или по году выпуска")
+    public Set<Film> search(@RequestParam(required = false) String name, @RequestParam(required = false) int year) {
+        return filmService.search(name, year);
     }
 
-    @GetMapping("/byyear")
-    @Operation(summary = "Найти фильмы по году выпуска")
-    public Set<Film> getByReleaseYear(@RequestParam int year) {
-        return FilmService.getByYear(year);
+    @PostMapping("/{filmId}/{userId}/{comments}")
+    @Operation(summary = "Добавить отзыв пользователя про фильм")
+    public void addComments(@PathVariable("filmId") Long filmId, @PathVariable("userId") Long userId, @PathVariable("comments") String comments) {
+        filmService.addComments(getById(filmId), UserService.getById(userId), comments);
     }
+
+
+    @GetMapping("/id")
+    @Operation(summary = "Найти отзывы про фильм")
+    public HashMap<Long, String> getComments(@RequestParam Long id) {
+        return filmService.getComments(id);
+    }
+
+    @PostMapping("/filmId/userId/grade")
+    @Operation(summary = "Добавить оценку пользователя про фильм")
+    public void addGrade(@RequestParam Long filmId, @RequestParam Long userId, @RequestParam int grade) {
+        filmService.addGrade(getById(filmId), UserService.getById(userId), grade);
+    }
+
+    @GetMapping("/filmId")
+    @Operation(summary = "Найти оценки за фильм")
+    public HashMap<Long, Integer> getGrades(@RequestParam Long filmId) {
+        return filmService.getGrades(filmId);
+    }
+
+
 }

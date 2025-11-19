@@ -5,6 +5,7 @@ import ru.jabki.filmplus.exception.FilmException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -15,24 +16,18 @@ public class Film {
     private LocalDate releaseDate;
     private int duration;
     private Set<Genre> genres;
+    //мап комментариев к фильму. Первый атрибут (Long) - id пользователя, второй (string) - комментарий
+    private HashMap<Long, String> comments = new HashMap<>();
+    //мап оценок к фильму. Первый атрибут (Long) - id пользователя, второй оценка от 0 до 10
+    private HashMap<Long, Integer> grades = new HashMap<>();
 
     public Film(Long id, String name, String description, String releaseDate, int duration, Set<Genre> genres) {
-        validateFilm(releaseDate);
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = LocalDate.parse(releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.duration = duration;
         this.genres = genres;
-    }
-
-    private static void validateFilm(String releaseDate) {
-        if (!Utils.isValidDate(releaseDate, "yyyy-MM-dd")) {
-            throw new FilmException("Ошибка форматирования даты или некорректный месяц или день. Дата должна быть в формате yyyy-MM-dd");
-        }
-        if (LocalDate.parse(releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")).isAfter(LocalDate.now())) {
-            throw new FilmException("Дата рождения не может быть в будущем");
-        }
     }
 
     public Long getId() {
@@ -81,5 +76,21 @@ public class Film {
 
     public void setGenres(Set<Genre> genres) {
         this.genres = genres;
+    }
+
+    public void addComment(Long userId, String comment) {
+        this.comments.put(userId, comment);
+    }
+
+    public HashMap<Long, String> getComments() {
+        return this.comments;
+    }
+
+    public HashMap<Long, Integer> getGrades() {
+        return this.grades;
+    }
+
+    public void setGrades(Long userId, Integer grade) {
+        this.grades.put(userId, grade);
     }
 }

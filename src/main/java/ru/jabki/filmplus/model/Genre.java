@@ -5,7 +5,7 @@ public enum Genre {
     HISTORY,
     HORROR,
     DRAMA,
-    BYOGRAPHY,
+    BIOGRAPHY,
     ADVENTURE,
     ANIMATION
 }

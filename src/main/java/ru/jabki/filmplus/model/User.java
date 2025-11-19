@@ -4,7 +4,8 @@ import ru.jabki.filmplus.exception.UserException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.regex.Pattern;
+import java.util.HashSet;
+import java.util.Set;
 
 public class User {
     private long id;
@@ -12,14 +13,15 @@ public class User {
     private String email;
     private String login;
     private LocalDate birthday;
+    private Set<Long> friends;
 
     public User(long id, String name, String email, String login, String birthday) {
-        validateUser(email, birthday);
         this.id = id;
         this.name = name;
         this.email = email;
         this.login = login;
         this.birthday = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.friends = new HashSet<>();
     }
 
     public long getId() {
@@ -62,17 +64,11 @@ public class User {
         this.birthday = birthday;
     }
 
-    private static void validateUser(String email, String birthday) {
-        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
-                .matcher(email)
-                .matches()) {
-            throw new UserException("Некорректное значение email");
-        }
-        if (!Utils.isValidDate(birthday, "yyyy-MM-dd")) {
-            throw new UserException("Ошибка форматирования даты или некорректный месяц или день. Дата должна быть в формате yyyy-MM-dd");
-        }
-        if (LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd")).isAfter(LocalDate.now())) {
-            throw new UserException("Дата рождения не может быть в будущем");
-        }
+    public Set<Long> getFriends() {
+        return this.friends;
+    }
+
+    public void setFriends(Set<Long> friends) {
+        this.friends = friends;
     }
 }
