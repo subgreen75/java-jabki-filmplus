@@ -53,16 +53,6 @@ public class UserController {
         return userService.update(user);
     }
 
-    @PostMapping("/{fromUserId}/{toUserId}")
-    @Operation(summary = "Добавить пользователя в друзья")
-    public void addFriends(@PathVariable("fromUserId") Long fromUserId, @PathVariable("toUserId") Long toUserId) {
-        userService.addFriends(fromUserId, toUserId);
-    }
 
-    @GetMapping("/id")
-    @Operation(summary = "Найти друзей пользователя по id")
-    public Set<Long> getFriendsById(@RequestParam long id) {
-        return userService.getFriendsById(getById(id));
-    }
 
 }

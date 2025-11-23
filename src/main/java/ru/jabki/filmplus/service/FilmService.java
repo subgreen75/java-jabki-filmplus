@@ -3,6 +3,7 @@ package ru.jabki.filmplus.service;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.FilmException;
+import ru.jabki.filmplus.model.Comment;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Genre;
 import ru.jabki.filmplus.model.User;
@@ -96,25 +97,5 @@ public class FilmService {
         }
     }
 
-    public void addComments(Film film, User user, String comments) {
-        film.addComment(user.getId(),  comments);
-    }
 
-    public HashMap<Long, String> getComments(Long filmId) {
-        return getById(filmId).getComments();
-    }
-
-    public void addGrade(Film film, User user, Integer grade) {
-        if (grade == null) {
-            throw new FilmException("Оценка не может быть null");
-        }
-        if (grade < 0 || grade > 10) {
-            throw new FilmException("Оценка должна быть в пределах от 0 до 10");
-        }
-        film.setGrades(user.getId(), grade);
-    }
-
-    public HashMap<Long, Integer> getGrades(Long filmId) {
-        return getById(filmId).getGrades();
-    }
 }

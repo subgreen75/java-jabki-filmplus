@@ -15,12 +15,12 @@ public class User {
     private LocalDate birthday;
     private Set<Long> friends;
 
-    public User(long id, String name, String email, String login, String birthday) {
+    public User(long id, String name, String email, String login, LocalDate birthday) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.login = login;
-        this.birthday = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.birthday = birthday;
         this.friends = new HashSet<>();
     }
 

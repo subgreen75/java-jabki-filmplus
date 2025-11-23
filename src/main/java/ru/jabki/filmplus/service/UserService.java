@@ -3,16 +3,12 @@ package ru.jabki.filmplus.service;
 import org.springframework.util.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.jabki.filmplus.exception.UserException;
-import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.User;
-import ru.jabki.filmplus.model.Utils;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -25,7 +21,7 @@ public class UserService {
         return user;
     }
 
-    public static User getById(long id) {
+    public User getById(long id) {
         final User user = users.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst().orElse(null);
@@ -79,14 +75,5 @@ public class UserService {
         }
     }
 
-    public void addFriends(long fromUserId, long toUserId) {
-        User fromUser = getById(fromUserId);
-        Set<Long> friends = fromUser.getFriends();
-        friends.add(toUserId);
-        fromUser.setFriends(friends);
-    }
 
-    public Set<Long> getFriendsById(User user) {
-        return user.getFriends();
-    }
 }

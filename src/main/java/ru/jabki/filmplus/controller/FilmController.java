@@ -60,31 +60,4 @@ public class FilmController {
     public Set<Film> search(@RequestParam(required = false) String name, @RequestParam(required = false) int year) {
         return filmService.search(name, year);
     }
-
-    @PostMapping("/{filmId}/{userId}/{comments}")
-    @Operation(summary = "Добавить отзыв пользователя про фильм")
-    public void addComments(@PathVariable("filmId") Long filmId, @PathVariable("userId") Long userId, @PathVariable("comments") String comments) {
-        filmService.addComments(getById(filmId), UserService.getById(userId), comments);
-    }
-
-
-    @GetMapping("/id")
-    @Operation(summary = "Найти отзывы про фильм")
-    public HashMap<Long, String> getComments(@RequestParam Long id) {
-        return filmService.getComments(id);
-    }
-
-    @PostMapping("/filmId/userId/grade")
-    @Operation(summary = "Добавить оценку пользователя про фильм")
-    public void addGrade(@RequestParam Long filmId, @RequestParam Long userId, @RequestParam int grade) {
-        filmService.addGrade(getById(filmId), UserService.getById(userId), grade);
-    }
-
-    @GetMapping("/filmId")
-    @Operation(summary = "Найти оценки за фильм")
-    public HashMap<Long, Integer> getGrades(@RequestParam Long filmId) {
-        return filmService.getGrades(filmId);
-    }
-
-
 }

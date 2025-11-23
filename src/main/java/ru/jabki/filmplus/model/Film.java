@@ -16,18 +16,17 @@ public class Film {
     private LocalDate releaseDate;
     private int duration;
     private Set<Genre> genres;
-    //мап комментариев к фильму. Первый атрибут (Long) - id пользователя, второй (string) - комментарий
-    private HashMap<Long, String> comments = new HashMap<>();
-    //мап оценок к фильму. Первый атрибут (Long) - id пользователя, второй оценка от 0 до 10
-    private HashMap<Long, Integer> grades = new HashMap<>();
 
-    public Film(Long id, String name, String description, String releaseDate, int duration, Set<Genre> genres) {
+    public Film(Long id, String name, String description, LocalDate releaseDate, int duration, Set<Genre> genres) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.releaseDate = LocalDate.parse(releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.releaseDate = releaseDate;
         this.duration = duration;
         this.genres = genres;
+    }
+
+    public Film(int i, String name, String description, LocalDate now, Genre genre) {
     }
 
     public Long getId() {
@@ -76,21 +75,5 @@ public class Film {
 
     public void setGenres(Set<Genre> genres) {
         this.genres = genres;
-    }
-
-    public void addComment(Long userId, String comment) {
-        this.comments.put(userId, comment);
-    }
-
-    public HashMap<Long, String> getComments() {
-        return this.comments;
-    }
-
-    public HashMap<Long, Integer> getGrades() {
-        return this.grades;
-    }
-
-    public void setGrades(Long userId, Integer grade) {
-        this.grades.put(userId, grade);
     }
 }
