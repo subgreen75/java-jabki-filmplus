@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.jabki.filmplus.exception.UserException;
 import ru.jabki.filmplus.model.User;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService {
@@ -38,6 +40,8 @@ public class UserService {
         User existsUser = getById(user.getId());
         existsUser.setName(user.getName());
         existsUser.setEmail(user.getEmail());
+        existsUser.setLogin(user.getLogin());
+        existsUser.setBirthday(user.getBirthday());
         return existsUser;
     }
 
@@ -53,6 +57,23 @@ public class UserService {
         if (!StringUtils.hasText(user.getEmail())) {
             throw new UserException("Емейл пользователя не может быть пустым");
         }
+
+        if (!StringUtils.hasText(user.getLogin())) {
+            throw new UserException("Логин пользователя не может быть пустым");
+        }
+
+        if (user.getBirthday() == null) {
+            throw new UserException("Дата рождения не может быть пустой");
+        }
+        if (!Pattern.compile("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+                .matcher(user.getEmail())
+                .matches()) {
+            throw new UserException("Некорректное значение email");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new UserException("Дата рождения не может быть в будущем");
+        }
     }
+
 
 }

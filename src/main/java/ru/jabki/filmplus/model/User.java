@@ -1,14 +1,27 @@
 package ru.jabki.filmplus.model;
 
+import ru.jabki.filmplus.exception.UserException;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
+
 public class User {
     private long id;
     private String name;
     private String email;
+    private String login;
+    private LocalDate birthday;
+    private Set<Long> friends;
 
-    public User(long id, String name, String email) {
+    public User(long id, String name, String email, String login, LocalDate birthday) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.login = login;
+        this.birthday = birthday;
+        this.friends = new HashSet<>();
     }
 
     public long getId() {
@@ -23,6 +36,14 @@ public class User {
         return this.email;
     }
 
+    public String getLogin() {
+        return this.login;
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -35,5 +56,19 @@ public class User {
         this.email = email;
     }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
 
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public Set<Long> getFriends() {
+        return this.friends;
+    }
+
+    public void setFriends(Set<Long> friends) {
+        this.friends = friends;
+    }
 }
