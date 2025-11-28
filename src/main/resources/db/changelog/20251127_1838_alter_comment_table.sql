@@ -1,0 +1,1 @@
+ALTER TABLE filmplus.comment ADD COLUMN comment VARCHAR NOT NULL;

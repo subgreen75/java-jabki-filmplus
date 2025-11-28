@@ -1,40 +1,43 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.jabki.filmplus.exception.UserException;
 import ru.jabki.filmplus.model.User;
+import ru.jabki.filmplus.repository.UserRepository;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 @Service
+@AllArgsConstructor
 public class UserService {
-    private static final Set<User> users = new HashSet<>();
 
+    private final UserRepository userRepository;
+
+    @Transactional(rollbackFor = Exception.class)
     public User create(User user) {
         validate(user);
-        user.setId((long) users.size() + 1);
-        users.add(user);
-        return user;
+        return userRepository.insert(user);
     }
 
+    @Transactional(readOnly = true)
     public User getById(long id) {
-        final User user = users.stream()
-                .filter(u -> u.getId() == id)
-                .findFirst().orElse(null);
+        final User user = userRepository.getById(id);
         if (user == null) {
             throw new UserException("Пользователь по id " + id + " не найден");
         }
         return user;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(long id) {
-        users.remove(getById(id));
+        userRepository.delete(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public User update(User user) {
         validate(user);
         User existsUser = getById(user.getId());
@@ -42,7 +45,7 @@ public class UserService {
         existsUser.setEmail(user.getEmail());
         existsUser.setLogin(user.getLogin());
         existsUser.setBirthday(user.getBirthday());
-        return existsUser;
+        return userRepository.update(user);
     }
 
     private void validate(User user) {
@@ -74,6 +77,4 @@ public class UserService {
             throw new UserException("Дата рождения не может быть в будущем");
         }
     }
-
-
 }
