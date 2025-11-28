@@ -1,42 +1,40 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.jabki.filmplus.exception.FriendsException;
-import ru.jabki.filmplus.exception.UserException;
-import ru.jabki.filmplus.model.Comment;
+import ru.jabki.filmplus.model.Friends;
 import ru.jabki.filmplus.model.User;
+import ru.jabki.filmplus.repository.FriendsRepository;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class FriendsService {
     private final UserService userService;
+    private final FriendsRepository friendsRepository;
 
-    public FriendsService(UserService userService) {
-        this.userService = userService;
+
+    public Friends create(Friends friends) {
+        validate(friends);
+        return friendsRepository.insert(friends);
     }
 
-    public void addFriends(long fromUserId, long toUserId) {
-        validate(fromUserId, toUserId);
-        User fromUser = userService.getById(fromUserId);
-        Set<Long> friends = fromUser.getFriends();
-        friends.add(toUserId);
-        fromUser.setFriends(friends);
+    public List<Friends> findFriendsById(User user) {
+
+        return friendsRepository.findByUserId(user.getId());
     }
 
-    public Set<Long> getFriendsById(User user) {
-        return user.getFriends();
-    }
-
-    private void validate(long fromUserId, long toUserId) {
-        if (fromUserId == toUserId) {
+    private void validate(Friends friends) {
+        if (friends.getUserId() == friends.getFriendUserId()) {
             throw new FriendsException("Нельзя добавлять самого себя в друзья");
         }
-        User fromUser = userService.getById(fromUserId);
-        User toUser = userService.getById(toUserId);
-        if (fromUser.getFriends().contains(toUserId)) {
-            throw new FriendsException("Пользователь с id " + fromUserId + " уже дружит с пользователем с id " + toUserId);
+        User fromUser = userService.getById(friends.getUserId());
+        User toUser = userService.getById(friends.getFriendUserId());
+        if (friendsRepository.existsFriendOnUsers(fromUser.getId(), toUser.getId())) {
+            throw new FriendsException("Пользователь с id " + fromUser.getId() + " уже дружит с пользователем с id " + toUser.getId());
         }
+
     }
 }
