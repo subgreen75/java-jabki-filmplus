@@ -2,6 +2,7 @@ package ru.jabki.filmplus.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,16 +21,12 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/v1/film")
 @Tag(name = "Фильмы")
 public class FilmController {
     private final FilmService filmService;
     private final UserService userService;
-
-    public FilmController(FilmService filmService, UserService userService) {
-        this.filmService = filmService;
-        this.userService = userService;
-    }
 
     @PostMapping
     @Operation(summary = "Создать фильм")
@@ -57,7 +54,7 @@ public class FilmController {
 
     @GetMapping("/name/year")
     @Operation(summary = "Найти фильм по названию и/или по году выпуска")
-    public Set<Film> search(@RequestParam(required = false) String name, @RequestParam(required = false) int year) {
+    public List<Film> search(@RequestParam(required = false) String name, @RequestParam(required = false) int year) {
         return filmService.search(name, year);
     }
 }

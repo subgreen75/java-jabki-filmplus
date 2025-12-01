@@ -1,47 +1,42 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.jabki.filmplus.exception.CommentException;
-import ru.jabki.filmplus.exception.FilmException;
-import ru.jabki.filmplus.exception.FriendsException;
 import ru.jabki.filmplus.exception.GradeException;
-import ru.jabki.filmplus.model.Comment;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Grade;
-import ru.jabki.filmplus.model.User;
+import ru.jabki.filmplus.repository.GradeRepository;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class GradeService {
-    private static final Set<Grade> grades = new HashSet<>();
-    private final UserService userService;
     private final FilmService filmService;
+    private final UserService userService;
+    private final GradeRepository gradeRepository;
 
-    public GradeService(UserService userService, FilmService filmService) {
-        this.userService = userService;
-        this.filmService = filmService;
+    public void addGrade(Grade grade) {
+        validate(grade);
+        gradeRepository.insert(grade);
     }
 
-    public void addGrade(Film film, User user, Integer grade) {
-        Grade gradeObj = new Grade(film.getId(), user.getId(), grade);
-        validate(gradeObj);
-        grades.add(gradeObj);
-    }
-
-    public Set<Grade> getGrades(Long filmId) {
+    public List<Grade> getGrades(Long filmId) {
         Film film = filmService.getById(filmId);
-        return grades.stream().filter(grade -> grade.getFilmId().equals(filmId)).collect(Collectors.toSet());
+        return gradeRepository.getGrades(filmId);
     }
 
     private void validate(Grade grade)  {
        if (grade.getGrade() < 1 || grade.getGrade() > 10) {
             throw new GradeException("Оценка должна быть в пределах от 1 до 10");
        }
-        if (grades.stream().anyMatch(c -> c.getUserId().equals(grade.getUserId()) && c.getFilmId().equals(grade.getFilmId()))) {
+       if (filmService.getById(grade.getFilmId()) == null) {
+           throw new GradeException("Не найден фильм по id " + grade.getFilmId());
+       }
+        if (userService.getById(grade.getUserId()) == null) {
+            throw new GradeException("Не найден пользователь по id " + grade.getFilmId());
+        }
+        if (!gradeRepository.existsGradeOnUser(grade.getFilmId(), grade.getUserId())) {
             throw new GradeException("Для пользователя id " + grade.getUserId() + " фильма id " + grade.getFilmId() + " уже есть оценка");
         }
     }
