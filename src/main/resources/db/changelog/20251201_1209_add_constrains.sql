@@ -1,0 +1,35 @@
+ALTER TABLE filmplus.comment
+    ADD CONSTRAINT FK_COMMENT_FILM_ID FOREIGN KEY (film_id)
+        REFERENCES filmplus.film (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE filmplus.comment
+    ADD CONSTRAINT FK_COMMENT_USER_ID FOREIGN KEY (user_id)
+        REFERENCES filmplus.user (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE filmplus.friends
+    ADD CONSTRAINT FK_FRIENDS_USER_ID FOREIGN KEY (user_id)
+        REFERENCES filmplus.user (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE filmplus.friends
+    ADD CONSTRAINT FK_FRIENDS_FRIEND_USER_ID FOREIGN KEY (friend_user_id)
+        REFERENCES filmplus.user (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE filmplus.grade
+    ADD CONSTRAINT FK_GRADE_FILM_ID FOREIGN KEY (film_id)
+        REFERENCES filmplus.film (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE filmplus.grade
+    ADD CONSTRAINT FK_GRADE_USER_ID FOREIGN KEY (user_id)
+        REFERENCES filmplus.user (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
