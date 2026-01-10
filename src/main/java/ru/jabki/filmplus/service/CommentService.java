@@ -1,5 +1,6 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.CommentException;
@@ -7,32 +8,26 @@ import ru.jabki.filmplus.exception.FilmException;
 import ru.jabki.filmplus.exception.UserException;
 import ru.jabki.filmplus.model.Comment;
 import ru.jabki.filmplus.model.Film;
-import ru.jabki.filmplus.model.User;
+import ru.jabki.filmplus.repository.CommentRepository;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class CommentService {
-    private static final Set<Comment> comments = new HashSet<>();
     private final UserService userService;
     private final FilmService filmService;
 
-    public CommentService(UserService userService, FilmService filmService) {
-        this.userService = userService;
-        this.filmService = filmService;
-    }
+    private final CommentRepository commentRepository;
 
     public void addComments(Comment comment) {
         validate(comment);
-        comments.add(comment);
+        commentRepository.insert(comment);
     }
 
-    public Set<Comment> getComments(Long filmId) {
+    public List<Comment> getComments(Long filmId) {
         Film film = filmService.getById(filmId);
-        return comments.stream().filter(comment -> comment.getFilmId().equals(filmId)).collect(Collectors.toSet());
+        return commentRepository.getComments(filmId);
     }
 
     private void validate(Comment comment) {
@@ -48,7 +43,7 @@ public class CommentService {
         if (!StringUtils.hasText(comment.getComment())) {
             throw new CommentException("ID фильма не может быть пустым");
         }
-        if (comments.stream().anyMatch(c -> c.getUserId().equals(comment.getUserId()) && c.getFilmId().equals(comment.getFilmId()))) {
+        if (!commentRepository.existsCommentOnUser(comment.getFilmId(), comment.getUserId())) {
             throw new CommentException("Для пользователя id " + comment.getUserId() + " фильма id " + comment.getFilmId() + " уже есть отзыв");
         }
         if (userService.getById(comment.getUserId()) == null) {

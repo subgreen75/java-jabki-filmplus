@@ -5,11 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 @Builder
-public class Grade {
+@AllArgsConstructor
+public class Friends {
     private long id;
-    private Long filmId;
     private Long userId;
-    private int grade;
+    private Long friendUserId;
 }

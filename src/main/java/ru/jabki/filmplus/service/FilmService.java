@@ -1,58 +1,53 @@
 package ru.jabki.filmplus.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.jabki.filmplus.exception.FilmException;
-import ru.jabki.filmplus.model.Comment;
+import ru.jabki.filmplus.exception.UserException;
 import ru.jabki.filmplus.model.Film;
 import ru.jabki.filmplus.model.Genre;
-import ru.jabki.filmplus.model.User;
+import ru.jabki.filmplus.repository.FilmRepository;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class FilmService {
-    private static final Set<Film> films = new HashSet<>();
+    private final FilmRepository filmRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     public Film create(Film film) {
         validate(film);
-        film.setId((long) films.size() + 1);
-        films.add(film);
-        return film;
+        return filmRepository.insert(film);
     }
 
+    @Transactional(readOnly = true)
     public Film getById(long id) {
-        final Film film = films.stream()
-                .filter(u -> u.getId() == id)
-                .findFirst().orElse(null);
+        final Film film = filmRepository.getById(id);
         if (film == null) {
-            throw new FilmException("Фильм по id " + id + " не найден");
+            throw new UserException("Фильм по id " + id + " не найден");
         }
         return film;
     }
 
-    public Set<Film> search(String name, int year ) {
+    @Transactional(readOnly = true)
+    public List<Film> search(String name, int year ) {
         if (StringUtils.isEmpty(name) && year == 0) {
             throw new FilmException("Хотя бы один параметр нужно ввести");
         }
-        return films.stream()
-                .filter(u -> u.getName().toUpperCase().contains((name == null)?u.getName().toUpperCase() : name.toUpperCase() ) &&
-                                  u.getReleaseDate().getYear() == ((year == 0) ? u.getReleaseDate().getYear() : year)
-                       )
-                .collect(Collectors.toSet());
+        return filmRepository.search(name, year);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(long id) {
-        films.remove(getById(id));
+        filmRepository.delete(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Film update(Film film) {
         validate(film);
         Film existsFilm = getById(film.getId());
@@ -61,7 +56,7 @@ public class FilmService {
         existsFilm.setReleaseDate(film.getReleaseDate());
         existsFilm.setDuration(film.getDuration());
         existsFilm.setGenres(film.getGenres());
-        return existsFilm;
+        return filmRepository.update(film);
     }
 
     private void validate(Film film) {
@@ -96,6 +91,4 @@ public class FilmService {
             throw new FilmException("Дата релиза не может быть в будущем");
         }
     }
-
-
 }
