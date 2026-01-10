@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: init-user-table
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251125_1940_init_user_table.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: init-film-table
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251127_1504_init_film_table.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: init-comment-table
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251127_1513_init_comment_table.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: init-grade-table
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251127_1549_init_grade_table.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: init-friens-table
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251127_1831_init_friends_table.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: alter-comment-table
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251127_1838_alter_comment_table.sql
+            relativeToChangelogFile: true
+
+  - changeSet:
+      id: add-constraints-tables
+      author: prazumov
+      changes:
+        - sqlFile:
+            path: 20251201_1209_add_constrains.sql
+            relativeToChangelogFile: true
+
